@@ -28,7 +28,7 @@ flowchart TD
 
     O --> S[Rank Buttons 1-5]
     S --> T[User Clicks Rank]
-    T --> U[SetRank() Called]
+    T --> U[SetRank Called]
     U --> V[Salary Updated]
 
     P --> W[Remove Qualifications Section]
@@ -56,8 +56,8 @@ flowchart TD
     R --> MM[Perfect Assistant Button]
     R --> NN[Perfect GP Button]
 
-    MM --> OO[MakePerfectAssistant() Called]
-    NN --> PP[MakePerfectGP() Called]
+    MM --> OO[MakePerfectAssistant Called]
+    NN --> PP[MakePerfectGP Called]
 
     OO --> QQ[Transformation Process]
     PP --> QQ
