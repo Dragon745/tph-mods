@@ -82,6 +82,9 @@ namespace QualificationUtils
 
                 PrintRemoveTraits(staff);
                 PrintAddTraits(staff);
+
+                PrintAssistantButton(staff);
+                PrintPerfectGPButton(staff);
             }
             catch (Exception e)
             {
@@ -266,9 +269,171 @@ namespace QualificationUtils
             GUILayout.EndScrollView();
         }
 
+        private static void PrintAssistantButton(Staff staff)
+        {
+            GUILayout.Space(10);
+            GUILayout.Label("Assistant", UnityModManager.UI.h2);
+
+            if (GUILayout.Button("Make Perfect Assistant", GUILayout.Height(30f)))
+            {
+                MakePerfectAssistant(staff);
+            }
+        }
+
+        private static void PrintPerfectGPButton(Staff staff)
+        {
+            GUILayout.Space(10);
+            GUILayout.Label("General Practitioner", UnityModManager.UI.h2);
+
+            if (GUILayout.Button("Make Perfect GP", GUILayout.Height(30f)))
+            {
+                MakePerfectGP(staff);
+            }
+        }
+
+
+
+
         #endregion
 
         #region Helper methods
+
+        private static void MakePerfectAssistant(Staff staff)
+        {
+            try
+            {
+                // Set rank to 5 (emp rank 5)
+                staff.SetRank(4); // Rank is 0-based, so 4 = rank 5
+                staff.SetSalary(staff.GetDesiredSalary(), false);
+
+                // Remove all qualifications
+                var qualificationsToRemove = staff.Qualifications.ToList();
+                foreach (var qualification in qualificationsToRemove)
+                {
+                    staff.Qualifications.Remove(qualification);
+                    staff.ModifiersComponent?.RemoveModifiers(qualification.Definition.Modifiers);
+                }
+
+                // Add specific qualifications
+                var level = GetCurrentLoadedLevel();
+                var allQualifications = level.JobApplicantManager.Qualifications.List.Keys;
+
+                var targetQualifications = new[] { "Customer Service", "Customer Service II", "Customer Service III", "Emotional Int", "Motivation" };
+
+                foreach (var targetQual in targetQualifications)
+                {
+                    var qualificationDef = allQualifications.FirstOrDefault(q =>
+                        q.NameLocalised.Translation.Contains(targetQual) ||
+                        q.NameLocalised.Translation.Equals(targetQual, StringComparison.OrdinalIgnoreCase));
+
+                    if (qualificationDef != null && qualificationDef.ValidFor(staff))
+                    {
+                        staff.Qualifications.Add(new QualificationSlot(qualificationDef, true));
+                        staff.ModifiersComponent?.AddModifiers(qualificationDef.Modifiers);
+                    }
+                }
+
+                // Remove all existing traits
+                var activeTraits = GetActiveCharacterTraits(staff);
+                foreach (var trait in activeTraits)
+                {
+                    staff.Traits.Remove(staff, trait);
+                    staff.ModifiersComponent?.RemoveModifiers(trait.Modifiers);
+                }
+
+                // Add specific positive traits
+                var allTraits = level.CharacterTraitsManager.AllTraits.List.Keys.ToList();
+                var targetTraits = new[] { "Charming", "Entertainer", "Fast Learner", "Funny", "Healer", "Hygienic", "Inspiring", "Motivated", "Positive", "Teacher", "Tireless" };
+
+                foreach (var targetTraitName in targetTraits)
+                {
+                    var traitDef = allTraits.FirstOrDefault(t =>
+                        t.GetShortName(staff.Gender).ToString().Contains(targetTraitName) ||
+                        t.GetShortName(staff.Gender).ToString().Equals(targetTraitName, StringComparison.OrdinalIgnoreCase));
+
+                    if (traitDef != null && traitDef.IsValidFor(staff.Definition._type) && traitDef.Conditions.All(x => x.IsValid(staff)))
+                    {
+                        staff.Traits.Add(traitDef);
+                        staff.ModifiersComponent?.AddModifiers(traitDef.Modifiers);
+                    }
+                }
+
+                Logger.Log($"Successfully transformed {staff.NameWithTitle} into a perfect assistant!");
+            }
+            catch (Exception e)
+            {
+                Logger.Error($"Error making perfect assistant: {e.ToString()}");
+            }
+        }
+
+        private static void MakePerfectGP(Staff staff)
+        {
+            try
+            {
+                // Set rank to 5 (emp rank 5)
+                staff.SetRank(4); // Rank is 0-based, so 4 = rank 5
+                staff.SetSalary(staff.GetDesiredSalary(), false);
+
+                // Remove all qualifications
+                var qualificationsToRemove = staff.Qualifications.ToList();
+                foreach (var qualification in qualificationsToRemove)
+                {
+                    staff.Qualifications.Remove(qualification);
+                    staff.ModifiersComponent?.RemoveModifiers(qualification.Definition.Modifiers);
+                }
+
+                // Add specific GP qualifications
+                var level = GetCurrentLoadedLevel();
+                var allQualifications = level.JobApplicantManager.Qualifications.List.Keys;
+
+                var targetQualifications = new[] { "General Practice", "General Practice II", "General Practice III", "General Practice IV", "General Practice V" };
+
+                foreach (var targetQual in targetQualifications)
+                {
+                    var qualificationDef = allQualifications.FirstOrDefault(q =>
+                        q.NameLocalised.Translation.Contains(targetQual) ||
+                        q.NameLocalised.Translation.Equals(targetQual, StringComparison.OrdinalIgnoreCase));
+
+                    if (qualificationDef != null && qualificationDef.ValidFor(staff))
+                    {
+                        staff.Qualifications.Add(new QualificationSlot(qualificationDef, true));
+                        staff.ModifiersComponent?.AddModifiers(qualificationDef.Modifiers);
+                    }
+                }
+
+                // Remove all existing traits
+                var activeTraits = GetActiveCharacterTraits(staff);
+                foreach (var trait in activeTraits)
+                {
+                    staff.Traits.Remove(staff, trait);
+                    staff.ModifiersComponent?.RemoveModifiers(trait.Modifiers);
+                }
+
+                // Add specific positive traits
+                var allTraits = level.CharacterTraitsManager.AllTraits.List.Keys.ToList();
+                var targetTraits = new[] { "Charming", "Entertainer", "Fast Learner", "Funny", "Healer", "Hygienic", "Inspiring", "Motivated", "Positive", "Teacher", "Tireless" };
+
+                foreach (var targetTraitName in targetTraits)
+                {
+                    var traitDef = allTraits.FirstOrDefault(t =>
+                        t.GetShortName(staff.Gender).ToString().Contains(targetTraitName) ||
+                        t.GetShortName(staff.Gender).ToString().Equals(targetTraitName, StringComparison.OrdinalIgnoreCase));
+
+                    if (traitDef != null && traitDef.IsValidFor(staff.Definition._type) && traitDef.Conditions.All(x => x.IsValid(staff)))
+                    {
+                        staff.Traits.Add(traitDef);
+                        staff.ModifiersComponent?.AddModifiers(traitDef.Modifiers);
+                    }
+                }
+
+                Logger.Log($"Successfully transformed {staff.NameWithTitle} into a perfect GP!");
+            }
+            catch (Exception e)
+            {
+                Logger.Error($"Error making perfect GP: {e.ToString()}");
+            }
+        }
+
 
         private static Level GetCurrentLoadedLevel()
         {
