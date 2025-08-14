@@ -15,12 +15,13 @@
     <TargetFrameworkProfile />
     <LangVersion>7.1</LangVersion>
     <TPHRootFolder>D:\SteamLibrary\steamapps\common\TPH</TPHRootFolder>
+    <ModsFolder>$(TPHRootFolder)\Mods\QualificationUtils</ModsFolder>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>$(ModsFolder)</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,7 +31,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>$(ModsFolder)</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -86,7 +87,4 @@
     <Compile Include="Patches\InspectorMenu_Inspect_Patch.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>start XCOPY /Y /R "$(TargetDir)" "$(TPHRootFolder)\Mods\$(ProjectName)\"</PostBuildEvent>
-  </PropertyGroup>
 </Project>
